@@ -1,5 +1,5 @@
 function checkLatestIOSTNotice() {
-  const TARGET_URL = "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=21";
+  const TARGET_URL = "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=";
 
   try {
     const response = UrlFetchApp.fetch(TARGET_URL, { muteHttpExceptions: true });
