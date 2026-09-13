@@ -23,7 +23,7 @@ function checkLatestIOSTNotice() {
     const scriptProperties = PropertiesService.getScriptProperties();
     const lastSeenId = scriptProperties.getProperty("LAST_SEEN_NOTICE_ID");
 
-    pdfUrl=fetchPDFurl(noticeUrl);
+    const pdfUrl = fetchPDFurl(noticeUrl);
     Logger.log(pdfUrl);
 
     if (lastSeenId === noticeId) {
@@ -32,12 +32,54 @@ function checkLatestIOSTNotice() {
     }
 
     const subject = `IOST Notice Alert: ${noticeTitle}`;
-    const emailBody = `Latest CSIT Notice Details:\n\nTitle: ${noticeTitle}\nNotice ID: ${noticeId}\nLink: ${noticeUrl} \nPDF link: ${pdfUrl}`;
+    const hasPdfUrl = !!pdfUrl;
+    const emailBody = `Latest CSIT Notice Details:\n\nTitle: ${noticeTitle}\nNotice ID: ${noticeId}\nLink: ${noticeUrl}${hasPdfUrl ? `\nPDF link: ${pdfUrl}` : '\nPDF link: Not available at the moment.'}`;
+    const safeTitle = escapeHtml(noticeTitle);
+    const htmlBody = `
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f8fafc;padding:24px 12px;font-family:Arial,sans-serif;">
+        <tr>
+          <td align="center">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+              <tr>
+                <td style="background:#1e293b;color:#ffffff;padding:20px 24px;font-size:22px;font-weight:700;">
+                  IOST CSIT Notice Alert
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:24px;">
+                  <div style="font-size:22px;line-height:1.4;font-weight:700;color:#0f172a;margin-bottom:12px;">
+                    ${safeTitle}
+                  </div>
+                  <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:#e2e8f0;color:#475569;font-size:13px;font-weight:600;margin-bottom:20px;">
+                    Notice ID: ${noticeId}
+                  </div>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+                    <tr>
+                      <td style="padding:0 8px 8px 0;">
+                        <a href="${noticeUrl}" style="display:inline-block;background:#334155;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;">View Notice Link</a>
+                      </td>
+                      ${hasPdfUrl ? `<td style="padding:0 0 8px 0;"><a href="${pdfUrl}" style="display:inline-block;background:#0f172a;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;">Open Notice PDF</a></td>` : ''}
+                    </tr>
+                  </table>
+                  ${hasPdfUrl ? '' : '<div style="color:#64748b;font-size:14px;line-height:1.5;">Notice PDF is not available at the moment.</div>'}
+                </td>
+              </tr>
+              <tr>
+                <td style="border-top:1px solid #e2e8f0;padding:16px 24px;color:#64748b;font-size:12px;line-height:1.6;background:#f8fafc;">
+                  This is an automated alert generated for Tribhuvan University IOST CSIT notices.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    `;
 
     MailApp.sendEmail({
       to: Session.getEffectiveUser().getEmail(),
       subject: subject,
-      body: emailBody
+      body: emailBody,
+      htmlBody: htmlBody
     });
 
     scriptProperties.setProperty("LAST_SEEN_NOTICE_ID", noticeId);
@@ -45,6 +87,15 @@ function checkLatestIOSTNotice() {
 
   } catch (err) {
     Logger.log("Error fetching or processing notices: " + err.toString());
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 }
 
