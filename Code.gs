@@ -1,5 +1,5 @@
 function checkLatestIOSTNotice() {
-  const TARGET_URL = "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=";
+  const TARGET_URL = CSIT.resultNotice;
 
   try {
     const response = UrlFetchApp.fetch(TARGET_URL, { muteHttpExceptions: true });
@@ -98,6 +98,17 @@ function checkLatestIOSTNotice() {
       .replace(/'/g, '&#39;');
   }
 }
+
+const CSIT = {
+  allNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=",
+  formNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=8",
+  resultNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=21",
+  generalNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=22",
+  examCenterNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=23",
+  examScheduleNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=26",
+  academicCalendarNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=633",
+  scholarshipNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=634"
+};
 
 function fetchPDFurl(url) {
   const resp = UrlFetchApp.fetch(url);
