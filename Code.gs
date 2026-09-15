@@ -23,8 +23,8 @@ function checkLatestIOSTNotice() {
     const scriptProperties = PropertiesService.getScriptProperties();
     const lastSeenId = scriptProperties.getProperty("LAST_SEEN_NOTICE_ID");
 
-    const pdfUrl = fetchPDFurl(noticeUrl);
-    Logger.log(pdfUrl);
+    const noticeFile = fetchNoticeFile(noticeUrl);
+    Logger.log(noticeFile ? `${noticeFile.type}: ${noticeFile.url}` : "No notice file found.");
 
     if (lastSeenId === noticeId) {
       Logger.log(`No new notices. Current latest ID is still ${noticeId}.`);
@@ -32,8 +32,9 @@ function checkLatestIOSTNotice() {
     }
 
     const subject = `IOST Notice Alert: ${noticeTitle}`;
-    const hasPdfUrl = !!pdfUrl;
-    const emailBody = `Latest CSIT Notice Details:\n\nTitle: ${noticeTitle}\nNotice ID: ${noticeId}\nLink: ${noticeUrl}${hasPdfUrl ? `\nPDF link: ${pdfUrl}` : '\nPDF link: Not available at the moment.'}`;
+    const hasNoticeFile = !!noticeFile;
+    const fileLabel = noticeFile ? noticeFile.type : "PDF/JPG";
+    const emailBody = `Latest CSIT Notice Details:\n\nTitle: ${noticeTitle}\nNotice ID: ${noticeId}\nLink: ${noticeUrl}${hasNoticeFile ? `\n${fileLabel} link: ${noticeFile.url}` : `\n${fileLabel} link: Not available at the moment.`}`;
     const safeTitle = escapeHtml(noticeTitle);
     const htmlBody = `
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f8fafc;padding:24px 12px;font-family:Arial,sans-serif;">
@@ -58,10 +59,10 @@ function checkLatestIOSTNotice() {
                       <td style="padding:0 8px 8px 0;">
                         <a href="${noticeUrl}" style="display:inline-block;background:#334155;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;">View Notice Link</a>
                       </td>
-                      ${hasPdfUrl ? `<td style="padding:0 0 8px 0;"><a href="${pdfUrl}" style="display:inline-block;background:#0f172a;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;">Open Notice PDF</a></td>` : ''}
+                      ${hasNoticeFile ? `<td style="padding:0 0 8px 0;"><a href="${noticeFile.url}" style="display:inline-block;background:#0f172a;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;">Open Notice ${fileLabel}</a></td>` : ''}
                     </tr>
                   </table>
-                  ${hasPdfUrl ? '' : '<div style="color:#64748b;font-size:14px;line-height:1.5;">Notice PDF is not available at the moment.</div>'}
+                  ${hasNoticeFile ? '' : `<div style="color:#64748b;font-size:14px;line-height:1.5;">Notice ${fileLabel} is not available at the moment.</div>`}
                 </td>
               </tr>
               <tr>
@@ -117,16 +118,20 @@ function createNoticeMap(programTitle) {
 const CSIT = createNoticeMap("CSIT");
 const BIT = createNoticeMap("BIT");
 
-function fetchPDFurl(url) {
+function fetchNoticeFile(url) {
   const resp = UrlFetchApp.fetch(url);
   const html = resp.getContentText();
 
   const regexNotice =
-    /<a\s+href=["'](https:\/\/portal\.tu\.edu\.np\/notice\/\d+\/\d+\.pdf)["'][^>]*>/gi;
+    /<a\s+href=["'](https:\/\/portal\.tu\.edu\.np\/notice\/\d+\/\d+\.(pdf|jpe?g))["'][^>]*>/i;
 
-  const pdfURL = regexNotice.exec(html);
+  const noticeFileMatch = regexNotice.exec(html);
 
-  if (pdfURL) {
-    return pdfURL[1]
+  if (noticeFileMatch) {
+    const extension = noticeFileMatch[2].toLowerCase();
+    return {
+      url: noticeFileMatch[1],
+      type: extension === "pdf" ? "PDF" : "JPG"
+    };
   }
 }
