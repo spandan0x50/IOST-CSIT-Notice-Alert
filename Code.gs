@@ -99,16 +99,23 @@ function checkLatestIOSTNotice() {
   }
 }
 
-const CSIT = {
-  allNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=",
-  formNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=8",
-  resultNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=21",
-  generalNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=22",
-  examCenterNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=23",
-  examScheduleNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=26",
-  academicCalendarNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=633",
-  scholarshipNotice: "https://iost.tu.edu.np/notices?title=CSIT&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=634"
-};
+function createNoticeMap(programTitle) {
+  const baseUrl = `https://iost.tu.edu.np/notices?title=${programTitle}&start_date=&nep_start_date=&end_date=&nep_end_date=&notice_type=`;
+  
+  return {
+    allNotice: `${baseUrl}`,
+    formNotice: `${baseUrl}8`,
+    resultNotice: `${baseUrl}21`,
+    generalNotice: `${baseUrl}22`,
+    examCenterNotice: `${baseUrl}23`,
+    examScheduleNotice: `${baseUrl}26`,
+    academicCalendarNotice: `${baseUrl}633`,
+    scholarshipNotice: `${baseUrl}634`
+  };
+}
+
+const CSIT = createNoticeMap("CSIT");
+const BIT = createNoticeMap("BIT");
 
 function fetchPDFurl(url) {
   const resp = UrlFetchApp.fetch(url);
