@@ -1,6 +1,6 @@
-# IOST CSIT Notice Alert
+# IOST Notice Alert
 
-Automatically receive an email whenever a new CSIT notice is published by the Institute of Science and Technology (IOST), Tribhuvan University.
+Automatically receive an email whenever a new notice is published by the Institute of Science and Technology (IOST), Tribhuvan University.
 
 This project runs entirely on Google Apps Script. Each user deploys their own copy, so notices are checked using their own Google account and emails are sent to their own email address.
 
@@ -8,7 +8,7 @@ This project runs entirely on Google Apps Script. Each user deploys their own co
 
 ## Features
 
-* Automatically checks the IOST CSIT notice page
+* Automatically checks the IOST notice page (CSIT & BIT)
 * Detects newly published notices
 * Extracts the notice details
 * Sends an email when a new notice is detected
@@ -18,25 +18,37 @@ This project runs entirely on Google Apps Script. Each user deploys their own co
 ## Installation
 
 1. Go to `https://script.google.com/` and click on `+ New Project`.
-2. Copy the `Code.gs` file, paste it into the project, and save it.
-3. Click **Run** with the `checkLatestIOSTNotice` function selected.
+2. Copy the `Code.gs` file and paste it into the project editor.
+3. On line 1, set `TARGET_URL` to your preferred program and notice type:
+
+```javascript
+const TARGET_URL = CSIT.resultNotice;
+```
+
+### Available Endpoints
+
+| Program | Variable | Endpoint Options |
+| :--- | :--- | :--- |
+| **B.Sc. CSIT** | `CSIT` | `.allNotice`<br>`.formNotice`<br>`.resultNotice`<br>`.generalNotice`<br>`.examCenterNotice`<br>`.examScheduleNotice`<br>`.academicCalendarNotice`<br>`.scholarshipNotice` |
+| **BIT** | `BIT` | `.allNotice`<br>`.formNotice`<br>`.resultNotice`<br>`.generalNotice`<br>`.examCenterNotice`<br>`.examScheduleNotice`<br>`.academicCalendarNotice`<br>`.scholarshipNotice` |
+4. Click **Run** with the `checkLatestIOSTNotice` function selected.
 
 ![image1](images/image1.png)
 
-4. You'll see a popup saying **"Authorization required"**. Approve it.
+5. You'll see a popup saying **"Authorization required"**. Approve it.
 
    > Click on `Review permissions` => `Advanced` => `Go to IOST-CSIT-Notice-Alert (unsafe)` => `Continue` => `Select all` => `Continue`.
    >
    > Google is asking you to authorize the permissions required to:
    > * Send emails
 
-5. You should see:
+6. You should see:
 
 ![image2](images/image2.png)
 
 You should also receive an email from your own Google account containing the latest notice.
 
-6. Go to the **Triggers** tab, click **Add Trigger** at the bottom right, and choose `Minutes timer` => `Every 5 minutes`.
+7. Go to the **Triggers** tab, click **Add Trigger** at the bottom right, and choose `Minutes timer` => `Every 5 minutes`.
 
 ![image3](images/image3.png)
 
